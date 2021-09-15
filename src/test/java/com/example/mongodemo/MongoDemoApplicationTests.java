@@ -1,12 +1,15 @@
 package com.example.mongodemo;
 
 import com.example.mongodemo.entity.User;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -85,6 +88,43 @@ class MongoDemoApplicationTests {
     }
 
 
+    //修改
+    @Test
+    public void updateUser(){
+        //根据id查询
+        List<User> userList = mongoTemplate.findAll(User.class);
+        User user = mongoTemplate.findById(userList.get(0).getId(), User.class);
+
+        //设置修改值
+        user.setName("test_1");
+        user.setAge(50);
+        user.setEmail("0000@qq.com");
+
+        //调用方法实现修改
+        Query query=new Query(Criteria.where("_id").is(user.getId()));
+        Update update=new Update();
+        update.set("name",user.getName());
+        update.set("age",user.getAge());
+        update.set("email",user.getEmail());
+        UpdateResult upsert = mongoTemplate.upsert(query, update, User.class);
+        long count = upsert.getModifiedCount();
+        System.out.println(count);
+
+    }
+
+    //删除
+    @Test
+    public void deleteUser(){
+        //根据id查询
+        List<User> userList = mongoTemplate.findAll(User.class);
+        User user = mongoTemplate.findById(userList.get(0).getId(), User.class);
+        //调用方法实现修改
+        Query query=new Query(Criteria.where("_id").is(user.getId()));
+        DeleteResult remove=mongoTemplate.remove(query,User.class);
+        long deletedCount = remove.getDeletedCount();
+        System.out.println(deletedCount);
+
+    }
 
 
 
