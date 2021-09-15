@@ -7,8 +7,7 @@ import com.mongodb.client.result.UpdateResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -83,6 +82,15 @@ class MongoDemoApplicationTests1 {
     @Test
     public void findPageUserList(){
 
+        //设置分页参数
+        //0代表第一页
+        Pageable pageable= PageRequest.of(0,3);
+        User user=new User();
+        user.setName("test");
+        Example<User> example=Example.of(user);
+        Page<User> userList = userRepository.findAll(example,pageable);
+        System.out.println(userList.getContent());
+
 
     }
 
@@ -91,13 +99,17 @@ class MongoDemoApplicationTests1 {
     @Test
     public void updateUser(){
 
+        List<User> userList = userRepository.findAll();
+        User user = userRepository.findById(userList.get(0).getId()).get();
+        user.setName("aaa");
+        User user1 = userRepository.save(user);
+        System.out.println(user1);
 
     }
 
     //删除
     @Test
     public void deleteUser(){
-
 
     }
 
